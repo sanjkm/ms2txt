@@ -39,12 +39,13 @@ class DatFile:
                 'DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOL', 'OI'
             ]
         else:
+            line_padding = 1  # non-data line at end
             file_handle = open(filename, 'r')
             lines = file_handle.read().split()
             file_handle.close()
-            assert(len(lines) == self.stock.fields)
+            assert((len(lines) - line_padding) == self.stock.fields)
             self.columns = []
-            for line in lines:
+            for line in lines[:-1 * line_padding]:
                 match = self.reg.search(line)
                 colname = match.groups()[0]
                 self.columns.append(colname)
