@@ -1,7 +1,7 @@
 """
 Reading metastock files.
 """
-
+import os
 import struct
 import re
 import math
@@ -35,11 +35,11 @@ class DataFileInfo(object):
     reg = re.compile('\"(.+)\",.+', re.IGNORECASE)
     columns = None
 
-    def _load_columns(self):
+    def _load_columns(self, dir_path):
         """
         Read columns names from the DOP file
         """
-        filename = 'F%d.DOP' % self.file_num # changed DOP to MWD
+        filename = (dir_path + 'F%d.DOP') % self.file_num # changed DOP to MWD
         file_handle = open(filename, 'r')
         lines = file_handle.read().split()
         file_handle.close()
@@ -134,7 +134,7 @@ class DataFileInfo(object):
     max_recs = 0
     last_rec = 0
 
-    def load_candles(self):
+    def load_candles(self, dir_path):
         """
         Load metastock DAT file and write the content
         to a text file
@@ -142,7 +142,7 @@ class DataFileInfo(object):
         file_handle = None
         outfile = None
         try:
-            filename = 'F%d.MWD' % self.file_num  # Changed DAT to MWD
+            filename = (dir_path + 'F%d.MWD') % self.file_num  # Changed DAT to MWD
             file_handle = open(filename, 'rb')
             self.max_recs = struct.unpack("H", file_handle.read(2))[0]
             self.last_rec = struct.unpack("H", file_handle.read(2))[0]
@@ -190,16 +190,16 @@ class DataFileInfo(object):
             if file_handle is not None:
                 file_handle.close()
             
-    def convert2ascii(self):
+    def convert2ascii(self, dir_path):
         """
         Load Metastock data file and output the data to text file.
         """
         print "Processing %s (fileNo %d)" % (self.stock_symbol, self.file_num)
         try:
             #print self.stock_symbol, self.file_num
-            self._load_columns()
+            self._load_columns(dir_path)
             #print self.columns
-            self.load_candles()
+            self.load_candles(dir_path)
 
         except Exception:
             print "Error while converting symbol", self.stock_symbol
@@ -249,7 +249,7 @@ class MSEMasterFile(object):
         file_handle.read(30)
         return dfi
 
-    def __init__(self, filename, precision=None):
+    def __init__(self, filename, precision=None, dir_path=''):
         """
         The whole file is read while creating this object
         @param filename: name of the file to open (usually 'EMASTER')
@@ -257,7 +257,15 @@ class MSEMasterFile(object):
         """
         if precision is not None:
             DataFileInfo.FloatColumn.precision = precision
-        file_handle = open(filename, 'rb')
+
+        self.dir_path = dir_path
+        self.master_file = True
+            
+        if os.path.isfile(self.dir_path + 'XMASTER') == False: # no XMASTER file
+            self.master_file = False
+            return None
+                    
+        file_handle = open(dir_path + filename, 'rb')
         file_handle.read(10)
 
 
@@ -288,7 +296,7 @@ class MSEMasterFile(object):
             print "symbol: %s, name: %s, file number: %s" % \
                 (stock.stock_symbol, stock.stock_name, stock.file_num)
 
-    def output_ascii(self, all_symbols, symbols):
+    def output_ascii(self, all_symbols, symbols, dir_path=''):
         """
         Read all or specified symbols and write them to text
         files (each symbol in separate file)
@@ -296,6 +304,8 @@ class MSEMasterFile(object):
         @type all_symbols: C{bool}
         @param symbols: list of symbols to process
         """
+        if self.master_file == False: # no XMASTER file
+            return None
         for stock in self.stocks:
             if all_symbols or (stock.stock_symbol[:-2] in symbols):
-                stock.convert2ascii()
+                stock.convert2ascii(dir_path)

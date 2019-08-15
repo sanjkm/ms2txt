@@ -7,6 +7,7 @@ data in the directory into a Pandas dataframe, returns the dataframe
 import sys
 
 from metastock.files import MetastockFiles
+from metastockX.mod_files import MSEMasterFile
 
 Usage = """usage: %prog [options] [symbol1] [symbol2] ....
 
@@ -31,9 +32,15 @@ def ms2pandas(dir_path, decimal_precision=4, ticker_list=[]):
     options = set_options(ticker_list, decimal_precision) # default values    
     args = ticker_list
 
-    em_file = MetastockFiles(options.encoding, options.precision)
+    if len(dir_path) > 0 and dir_path[-1] != '/':
+        dir_path += '/'
+    
+    em_file = MetastockFiles(options.encoding, options.precision, dir_path)
+    
+    Xem_file = MSEMasterFile('XMASTER', options.precision, dir_path)
     
     # extract the data
     em_file.output_ascii(options.all, args)
+    Xem_file.output_ascii(options.all, args)
 
-ms2pandas('', decimal_precision=4, ticker_list=[])
+ms2pandas('/home/smenon/OpenSource/ms2txt', decimal_precision=4, ticker_list=[])

@@ -219,12 +219,13 @@ class MSMasterFile:
     reconds_count = 0
     file_handle = None
 
-    def __init__(self, encoding):
+    def __init__(self, encoding, dir_path):
         self.encoding = encoding
+        self.dir_path = dir_path
 
     def load(self):
-        if os.path.isfile('MASTER'):
-            self.file_handle = open('MASTER', 'rb')
+        if os.path.isfile(self.dir_path + 'MASTER'):
+            self.file_handle = open(self.dir_path + 'MASTER', 'rb')
             self.reconds_count = struct.unpack("H", self.file_handle.read(2))[0]
 
     def close(self):
@@ -236,7 +237,7 @@ class MSMasterFile:
         symbol = Stock()
         self.file_handle.seek( (i+1)*53)
         symbol.file_number = struct.unpack("B", self.file_handle.read(1))[0]
-        symbol.filename = 'F%d' % symbol.file_number
+        symbol.filename = (self.dir_path + 'F%d') % symbol.file_number
         symbol.datafile_ext = '.DAT'
         self.file_handle.seek(2, os.SEEK_CUR)
         symbol.record_length = struct.unpack("B", self.file_handle.read(1))[0]
@@ -262,8 +263,9 @@ class MSEMasterFile:
     Metastock extended index file
     """
 
-    def __init__(self, encoding):
+    def __init__(self, encoding, dir_path):
         self.encoding = encoding
+        self.dir_path = dir_path
         self.reconds_count = 0
 
     def load(self):
@@ -271,10 +273,13 @@ class MSEMasterFile:
         The whole file is read while creating this object
         @param filename: name of the file to open (usually 'EMASTER')
         """
-        if os.path.isfile('EMASTER'):
-            self.file_handle = open('EMASTER', 'rb')
+        if os.path.isfile(self.dir_path + 'EMASTER'):
+            self.file_handle = open(self.dir_path + 'EMASTER', 'rb')
             self.reconds_count = struct.unpack("H", self.file_handle.read(2))[0] # czy moze 1 bajt i B?
             self.last_file = struct.unpack("H", self.file_handle.read(2))[0]
+        else:
+            print 'No EMASTER file in directory %s' % self.dir_path
+            exit()
         return
 
     def close(self):
@@ -290,7 +295,7 @@ class MSEMasterFile:
         symbol.file_number = struct.unpack("B", self.file_handle.read(1))[0]
         if symbol.file_number == 0:
             return symbol
-        symbol.filename = 'F%d' % symbol.file_number
+        symbol.filename = (self.dir_path + 'F%d') % symbol.file_number
         symbol.datafile_ext = '.DAT'
         self.file_handle.seek(3, os.SEEK_CUR)
         symbol.fields = struct.unpack("B", self.file_handle.read(1))[0]
@@ -313,12 +318,13 @@ class MSXMsterFile:
     reconds_count = 0
     file_handle = None
 
-    def __init__(self, encoding):
+    def __init__(self, encoding, dir_path):
         self.encoding = encoding
+        self.dir_path = dir_path
 
     def load(self):
-        if os.path.isfile('XMASTER'):
-            self.file_handle = open('XMASTER', 'rb')
+        if os.path.isfile(self.dir_path + 'XMASTER'):
+            self.file_handle = open(self.dir_path + 'XMASTER', 'rb')
             self.file_handle.seek(10, os.SEEK_SET)
             self.reconds_count = struct.unpack("H", self.file_handle.read(2))[0]
 
@@ -342,7 +348,7 @@ class MSXMsterFile:
         symbol.time_frame = struct.unpack("c", self.file_handle.read(1))[0].decode('ascii')
         self.file_handle.seek(2, os.SEEK_CUR) # intraday timeframe?
         symbol.file_number = struct.unpack("H", self.file_handle.read(2))[0]
-        symbol.filename = 'F%d' % symbol.file_number
+        symbol.filename = (self.dir_path + 'F%d') % symbol.file_number
         symbol.datafile_ext = '.MWD'
         self.file_handle.seek(3, os.SEEK_CUR)
         self.file_handle.seek(1, os.SEEK_CUR) # bitset
@@ -358,12 +364,13 @@ class MSXMsterFile:
 
 
 class MetastockFiles:
-    def __init__(self, encoding, precision=None):
+    def __init__(self, encoding, precision=None, dir_path=''):
         if precision is not None:
             DatFile.FloatColumn.precision = precision
-        emaster = MSEMasterFile(encoding)
-        master = MSMasterFile(encoding)
-        xmaster = MSXMsterFile(encoding)
+
+        emaster = MSEMasterFile(encoding, dir_path)
+        master = MSMasterFile(encoding, dir_path)
+        xmaster = MSXMsterFile(encoding, dir_path)
 
         self.symbols = {}
 
