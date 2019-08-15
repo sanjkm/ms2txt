@@ -30,7 +30,6 @@ class DatFile:
         """
         Try to read columns names from the DOP file
         """
-        
         filename = 'F%d.DOP' % self.stock.file_number
         if not os.path.isfile(filename):
             print("No DOP file found, assuming default columns set")
@@ -40,15 +39,12 @@ class DatFile:
                 'DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOL', 'OI'
             ]
         else:
-
-            num_end_padding_lines = 1  # lines w no data at end of file
-            
             file_handle = open(filename, 'r')
             lines = file_handle.read().split()
             file_handle.close()
-            assert((len(lines)-num_end_padding_lines) == self.stock.fields)
+            assert(len(lines) == self.stock.fields)
             self.columns = []
-            for line in lines[:-1*num_end_padding_lines]:
+            for line in lines:
                 match = self.reg.search(line)
                 colname = match.groups()[0]
                 self.columns.append(colname)
