@@ -9,7 +9,8 @@ File ms2pandas.py contains the function ms2pandas.
 
 from ms2pandas import ms2pandas
 
-def ms2pandas(dir_path='', decimal_precision=4, ticker_list=[])
+Example: ms2pandas('path/to/dir', decimal_precision=5, 
+		   ticker_list=['RBF9', 'SPH9'])
 
 The function ms2pandas takes 3 optional arguments:
 
@@ -24,6 +25,7 @@ If empty, by default it returns all the data in the directory. More
 accurately, it returns all symbols listed in the EMASTER and the
 XMASTER files in the directory. 
 
+
 Notes:
 - Different functions and routines are used to handle the symbols in the
 'EMASTER' file (file numbers 0-255) and the 'XMASTER' file 
@@ -37,6 +39,6 @@ If it does not, I suggest looking at the variable line_padding
 (in metastock/files.py and metastock/mod_files.py). Changing this to zero
 may work for stocks, but no promises there
 
-- If Metastock alters their data spec in the future, as they did between the 
-EMASTER and XMASTER files, then none of this code is likely to work 
-on their new spec. 
+- If Metastock alters their data spec in the future (new spec is why
+EMASTER and XMASTER handling is so different), then none of this code is 
+likely to work on their new spec. 
