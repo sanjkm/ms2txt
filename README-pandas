@@ -1,0 +1,42 @@
+Author: sanjkm
+
+Python utility that reads Metastock data files and returns a pandas
+dataframe containing all the data
+
+Usage:
+
+File ms2pandas.py contains the function ms2pandas.
+
+from ms2pandas import ms2pandas
+
+def ms2pandas(dir_path='', decimal_precision=4, ticker_list=[])
+
+The function ms2pandas takes 3 optional arguments:
+
+1) dir_path is the directory containing the Metastock data files.
+If blank, dir_path assumed to be ''
+
+2) decimal_precision is how many decimals places you want the data
+taken out to in the dataframe. Default is 4 decimal places
+
+3) ticker_list is a list of symbols that you want included in the dataframe.
+If empty, by default it returns all the data in the directory. More
+accurately, it returns all symbols listed in the EMASTER and the
+XMASTER files in the directory. 
+
+Notes:
+- Different functions and routines are used to handle the symbols in the
+'EMASTER' file (file numbers 0-255) and the 'XMASTER' file 
+(file numbers > 256+). These correspond to the code directories
+metastock and metastockX, respectively. If you make a change in one directory,
+you should probably make the parallel change in the other directory.
+
+- This has been verified to work on futures data only. In its original
+form, it has worked on stocks, so I presume this is still the case. 
+If it does not, I suggest looking at the variable line_padding 
+(in metastock/files.py and metastock/mod_files.py). Changing this to zero
+may work for stocks, but no promises there
+
+- If Metastock alters their data spec in the future, as they did between the 
+EMASTER and XMASTER files, then none of this code is likely to work 
+on their new spec. 
