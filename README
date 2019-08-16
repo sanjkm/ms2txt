@@ -16,3 +16,9 @@ python <path>/ms2txt.py --all
 
 More help:
 python <path>/ms2txt.py --help
+
+Notes (written by sanjkm):
+- This program is verified to work on futures data from Metastock. It
+should work on stocks, but I have no way to check this, so I don't know
+for sure. If it does not, I've written some notes in the README-pandas
+file which may help. 
