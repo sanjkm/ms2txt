@@ -26,6 +26,15 @@ class DatFile:
             print("Error while converting symbol", self.stock.stock_symbol)
             traceback.print_exc()
 
+    def dump_to_list (self):
+        try:
+            self.load_columns()
+            data_dict_list = self.candles_to_list()
+        except Exception:
+            print("Error while converting symbol", self.stock.stock_symbol)
+            traceback.print_exc()
+        finally:
+            return data_dict_list
     def load_columns(self):
         """
         Try to read columns names from the DOP file
@@ -186,6 +195,74 @@ class DatFile:
             if file_handle is not None:
                 file_handle.close()
 
+    # Upload candle values into a list of dictionaries
+    # Eventually, the list will be converted to pandas dataframe
+    def candles_to_list(self):
+        """
+        Load metastock DAT file and write the content
+        to a text file
+        """
+        file_handle = None
+        outfile = None
+        data_dict_list = []
+        
+        try:
+            file_handle = open('%s%s' % (self.stock.filename, self.stock.datafile_ext), 'rb')
+            self.max_recs = struct.unpack("H", file_handle.read(2))[0]
+            self.last_rec = struct.unpack("H", file_handle.read(2))[0]
+
+            # not sure about this, but it seems to work
+            file_handle.seek((self.stock.fields - 1) * 4, os.SEEK_CUR)
+
+            # print "Expecting %d candles in file %s. num_fields : %d" % \
+            #    (self.last_rec - 1, filename, self.num_fields)
+            
+            # outfile = open('%s.TXT' % self.stock.stock_symbol, 'w')
+            # write the header line, for example:
+            # "Name","Date","Time","Open","High","Low","Close","Volume","Oi"
+            # outfile.write('"Name"')
+            columns = []
+            for ms_col_name in self.columns:
+                column = self.knownMSColumns.get(ms_col_name)
+                if column is not None:
+                    pass
+                    # outfile.write(',"%s"' % column.name)
+                columns.append(column)  # we append None if the column is unknown
+            # outfile.write('\n')
+
+            # we have (self.last_rec - 1) candles to read
+            for _ in range(self.last_rec - 1):
+                data_dict = {}
+                data_dict['Symbol'] = self.stock.stock_symbol
+                
+                # outfile.write(self.stock.stock_symbol)
+                for col in columns:
+                    if col is None:  # unknown column?
+                        # ignore this column
+                        file_handle.seek(self.unknownColumnDataSize, os.SEEK_CUR)
+                    else:
+                        # read the column data
+                        bytes = file_handle.read(col.dataSize)
+                        # decode the data
+                        value = col.read(bytes)
+                        # format it
+                        value = col.format(value)
+
+                        # outfile.write(',%s' % value)
+                        data_dict[col.name] = value
+
+                data_dict_list.append(data_dict)
+
+                # outfile.write('\n')
+        finally:
+            '''
+            if outfile is not None:
+                outfile.close()
+            '''
+            if file_handle is not None:
+                file_handle.close()
+            return data_dict_list    
+
 
 def dump_stock_to_file(stock):
     print("Processing %s (fileNo %d)" % (stock.stock_symbol, stock.file_number))
@@ -196,6 +273,15 @@ def dump_stock_to_file(stock):
         print("Error while converting symbol", stock.stock_symbol)
         traceback.print_exc()
 
+def dump_stock_to_list(stock):
+    # print("Processing %s (fileNo %d)" % (stock.stock_symbol, stock.file_number))
+    try:
+        file = DatFile(stock)
+        data_dict_list = file.dump_to_list()
+    except Exception:
+        print("Error while converting symbol", stock.stock_symbol)
+        traceback.print_exc()
+    return data_dict_list
 
 class Stock:
     file_number = 0
@@ -431,3 +517,16 @@ class MetastockFiles:
             if all_symbols or (str(stock.stock_symbol) in symbols):
                 dump_stock_to_file(stock)
 
+    def output_data_list (self, all_symbols, symbols):
+        """
+        Read all or specified symbols and write them to list of dictionaries
+        @param all_symbols: when True, all symbols are processed
+        @type all_symbols: C{bool}
+        @param symbols: list of symbols to process
+        """
+        data_dict_list = []
+        for stock in self.symbols.values():
+            if all_symbols or (str(stock.stock_symbol) in symbols):
+                dump_stock_to_file(stock)
+                data_dict_list += dump_stock_to_list (stock)
+        return data_dict_list
