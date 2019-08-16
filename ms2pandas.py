@@ -45,10 +45,7 @@ def ms2pandas(dir_path, decimal_precision=4, ticker_list=[]):
     data_listX = Xem_file.output_data_list(options.all, args, dir_path)
     
     df = pd.DataFrame(data_list + data_listX)
-    print df.tail()
-    exit()
-    
-    em_file.output_ascii(options.all, args)
-    Xem_file.output_ascii(options.all, args)
+
+    return df
 
 ms2pandas('/home/smenon/OpenSource/ms2txt', decimal_precision=4, ticker_list=[])

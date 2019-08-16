@@ -8,6 +8,7 @@ import re
 import traceback
 
 from .utils import fmsbin2ieee, float2date, float2time, int2date, paddedString
+from .utils import convertSymbolName
 
 
 class DatFile:
@@ -337,7 +338,7 @@ class MSMasterFile:
         symbol.time_frame = struct.unpack("c", self.file_handle.read(1))[0].decode('ascii')
         self.file_handle.seek(2, os.SEEK_CUR)
         name = self.file_handle.read(14)
-        symbol.stock_symbol = paddedString(name, 'ascii')
+        symbol.stock_symbol = convertSymbolName(paddedString(name, 'ascii'))
         return symbol
 
 
@@ -384,7 +385,7 @@ class MSEMasterFile:
         symbol.fields = struct.unpack("B", self.file_handle.read(1))[0]
         self.file_handle.seek(4, os.SEEK_CUR)
         name = self.file_handle.read(14)
-        symbol.stock_symbol = paddedString(name, 'ascii')
+        symbol.stock_symbol = convertSymbolName(paddedString(name, 'ascii'))
         self.file_handle.seek(7, os.SEEK_CUR)
         name = self.file_handle.read(16)
         symbol.stock_name = paddedString(name, self.encoding)

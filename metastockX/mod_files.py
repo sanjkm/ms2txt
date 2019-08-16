@@ -388,7 +388,7 @@ class MSEMasterFile(object):
         if self.master_file == False: # no XMASTER file
             return None
         for stock in self.stocks:
-            if all_symbols or (stock.stock_symbol[:-2] in symbols):
+            if all_symbols or (stock.stock_symbol in symbols):
                 stock.convert2ascii(dir_path)
 
     def output_data_list (self, all_symbols, symbols, dir_path=''):
@@ -403,7 +403,7 @@ class MSEMasterFile(object):
             return data_dict_list
         
         for stock in self.stocks:
-            if all_symbols or (str(stock.stock_symbol)[:-2] in symbols):
-                # dump_stock_to_file(stock)
+            if all_symbols or (stock.stock_symbol in symbols):
                 data_dict_list += stock.convert2list(dir_path)
+                
         return data_dict_list

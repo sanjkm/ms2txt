@@ -46,14 +46,22 @@ def float2time(time):
     minute = (time % 10000) / 100
     return datetime.time(hour, minute)
 
+
 def convertSymbolName (sym_name):
     """
     Gets rid of the first two symbols of the symbol name, as well as
     all the characters after (and including) the '#' symbol
     """
-    beg_chars = 2
+    if sym_name[0] == '@':
+        beg_chars = 2
+    else:
+        beg_chars = 0
     
     pound_char = "#"
     pound_index = sym_name.find(pound_char)
+    if pound_index == -1:  # no pound character in the symbol
+        end_chars = len(sym_name)
+    else:
+        end_chars = pound_index
     
-    return sym_name[beg_chars:pound_index]
+    return sym_name[beg_chars:end_chars]
