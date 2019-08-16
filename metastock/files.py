@@ -525,6 +525,5 @@ class MetastockFiles:
         data_dict_list = []
         for stock in self.symbols.values():
             if all_symbols or (str(stock.stock_symbol) in symbols):
-                dump_stock_to_file(stock)
                 data_dict_list += dump_stock_to_list (stock)
         return data_dict_list

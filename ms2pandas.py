@@ -10,12 +10,6 @@ import pandas as pd
 from metastock.files import MetastockFiles
 from metastockX.mod_files import MSEMasterFile
 
-Usage = """usage: %prog [options] [symbol1] [symbol2] ....
-
-Examples:
-    %prog -p 2 --all        extract all symbols from EMASTER file
-    %prog FW20 "S&P500"     extract FW20 and S&P500 from EMASTER file
-"""
 
 # default is set to extract all data in the directory
 class set_options():
@@ -28,7 +22,7 @@ class set_options():
         self.precision = decimal_precision
         self.encoding = 'ascii'
 
-def ms2pandas(dir_path, decimal_precision=4, ticker_list=[]):
+def ms2pandas(dir_path='', decimal_precision=4, ticker_list=[]):
 
     options = set_options(ticker_list, decimal_precision) # default values    
     args = ticker_list
@@ -40,12 +34,10 @@ def ms2pandas(dir_path, decimal_precision=4, ticker_list=[]):
     
     Xem_file = MSEMasterFile('XMASTER', options.precision, dir_path)
     
-    # extract the data
+    # extract the data into lists of dictionaries
     data_list = em_file.output_data_list(options.all, args)
     data_listX = Xem_file.output_data_list(options.all, args, dir_path)
     
     df = pd.DataFrame(data_list + data_listX)
 
     return df
-
-ms2pandas('/home/smenon/OpenSource/ms2txt', decimal_precision=4, ticker_list=[])
