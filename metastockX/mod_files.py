@@ -189,7 +189,70 @@ class DataFileInfo(object):
                 outfile.close()
             if file_handle is not None:
                 file_handle.close()
-            
+                
+    # Upload candle values into a list of dictionaries
+    # Eventually, the list will be converted to pandas dataframe
+    def candles_to_list(self, dir_path):
+        
+        file_handle = None
+        outfile = None
+        data_dict_list = []
+        
+        try:
+            filename = (dir_path + 'F%d.MWD') % self.file_num  # Changed DAT to MWD
+            file_handle = open(filename, 'rb')
+            self.max_recs = struct.unpack("H", file_handle.read(2))[0]
+            self.last_rec = struct.unpack("H", file_handle.read(2))[0]
+            self.num_fields = len(self.columns)
+
+            # not sure about this, but it seems to work
+            file_handle.read((self.num_fields - 1) * 4)
+
+            #print "Expecting %d candles in file %s. num_fields : %d" % \
+            #    (self.last_rec - 1, filename, self.num_fields)
+
+            # outfile = open('%s.TXT' % self.stock_symbol, 'w')
+            # write the header line, for example:
+            #"Name","Date","Time","Open","High","Low","Close","Volume","Oi"
+            # outfile.write('"Name"')
+            columns = []
+            for ms_col_name in self.columns:
+                column = self.knownMSColumns.get(ms_col_name)
+                if column is not None:
+                    pass
+                    # outfile.write(',"%s"' % column.name)
+                columns.append(column) # we append None if the column is unknown
+            # outfile.write('\n')
+
+            # we have (self.last_rec - 1) candles to read
+            for _ in xrange(self.last_rec - 1):
+                data_dict = {}
+                data_dict['Symbol'] = self.stock_symbol
+                # outfile.write(self.stock_symbol)
+                for col in columns:
+                    if col is None: # unknown column?
+                        # ignore this column
+                        file_handle.read(self.unknownColumnDataSize)
+                    else:
+                        # read the column data
+                        bytes = file_handle.read(col.dataSize)
+                        # decode the data
+                        value = col.read(bytes)
+                        # format it
+                        value = col.format(value)
+                        data_dict[col.name] = value
+                        
+                        # outfile.write(',%s' % value)
+                data_dict_list.append(data_dict)
+                # outfile.write('\n')
+        finally:
+            '''
+            if outfile is not None:
+                outfile.close()
+            '''
+            if file_handle is not None:
+                file_handle.close()
+            return data_dict_list
     def convert2ascii(self, dir_path):
         """
         Load Metastock data file and output the data to text file.
@@ -204,6 +267,24 @@ class DataFileInfo(object):
         except Exception:
             print "Error while converting symbol", self.stock_symbol
             traceback.print_exc()
+
+
+    def convert2list(self, dir_path):
+        """
+        Load Metastock data file and output the data to list of dictionaries
+        """
+        # print "Processing %s (fileNo %d)" % (self.stock_symbol, self.file_num)
+        try:
+            #print self.stock_symbol, self.file_num
+            self._load_columns(dir_path)
+            #print self.columns
+            data_dict_list = self.candles_to_list(dir_path)
+
+        except Exception:
+            print "Error while converting symbol", self.stock_symbol
+            traceback.print_exc()
+        finally:
+            return data_dict_list
 
 class MSEMasterFile(object):
     """
@@ -309,3 +390,20 @@ class MSEMasterFile(object):
         for stock in self.stocks:
             if all_symbols or (stock.stock_symbol[:-2] in symbols):
                 stock.convert2ascii(dir_path)
+
+    def output_data_list (self, all_symbols, symbols, dir_path=''):
+        """
+        Read all or specified symbols and write them to list of dictionaries
+        @param all_symbols: when True, all symbols are processed
+        @type all_symbols: C{bool}
+        @param symbols: list of symbols to process
+        """
+        data_dict_list = []
+        if self.master_file == False: # no XMASTER file, return empty list
+            return data_dict_list
+        
+        for stock in self.stocks:
+            if all_symbols or (str(stock.stock_symbol)[:-2] in symbols):
+                # dump_stock_to_file(stock)
+                data_dict_list += stock.convert2list(dir_path)
+        return data_dict_list

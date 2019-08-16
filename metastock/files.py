@@ -58,7 +58,7 @@ class DatFile:
                 match = self.reg.search(line)
                 colname = match.groups()[0]
                 self.columns.append(colname)
-            print(self.columns)
+            # print(self.columns)
 
     class Column:
         """
@@ -198,10 +198,7 @@ class DatFile:
     # Upload candle values into a list of dictionaries
     # Eventually, the list will be converted to pandas dataframe
     def candles_to_list(self):
-        """
-        Load metastock DAT file and write the content
-        to a text file
-        """
+        
         file_handle = None
         outfile = None
         data_dict_list = []
@@ -265,7 +262,7 @@ class DatFile:
 
 
 def dump_stock_to_file(stock):
-    print("Processing %s (fileNo %d)" % (stock.stock_symbol, stock.file_number))
+    # print("Processing %s (fileNo %d)" % (stock.stock_symbol, stock.file_number))
     try:
         file = DatFile(stock)
         file.dump()

@@ -5,6 +5,7 @@ data in the directory into a Pandas dataframe, returns the dataframe
 """
 
 import sys
+import pandas as pd
 
 from metastock.files import MetastockFiles
 from metastockX.mod_files import MSEMasterFile
@@ -40,6 +41,13 @@ def ms2pandas(dir_path, decimal_precision=4, ticker_list=[]):
     Xem_file = MSEMasterFile('XMASTER', options.precision, dir_path)
     
     # extract the data
+    data_list = em_file.output_data_list(options.all, args)
+    data_listX = Xem_file.output_data_list(options.all, args, dir_path)
+    
+    df = pd.DataFrame(data_list + data_listX)
+    print df.tail()
+    exit()
+    
     em_file.output_ascii(options.all, args)
     Xem_file.output_ascii(options.all, args)
 
