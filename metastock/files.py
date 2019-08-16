@@ -262,7 +262,7 @@ class DatFile:
 
 
 def dump_stock_to_file(stock):
-    # print("Processing %s (fileNo %d)" % (stock.stock_symbol, stock.file_number))
+    print("Processing %s (fileNo %d)" % (stock.stock_symbol, stock.file_number))
     try:
         file = DatFile(stock)
         file.dump()
