@@ -1,8 +1,8 @@
 Author: sanjkm
 
 Python utility that reads Metastock data files and returns a pandas
-dataframe containing all the data. Tested for python2, not yet tested for
-python3
+dataframe containing all the data. It also generates csv files if desired
+from the command line. Works in python2 and python3. 
 
 Usage:
 
@@ -37,8 +37,7 @@ you should probably make the parallel change in the other directory.
 - This has been verified to work on futures data only. In its original
 form, it has worked on stocks, so I presume this is still the case. 
 If it does not, I suggest looking at the variable line_padding 
-(in metastock/files.py and metastock/mod_files.py). Changing this to zero
-may work for stocks, but no promises there
+(in metastock/files.py and metastock/mod_files.py).
 
 - If Metastock alters their data spec in the future (new spec is why
 EMASTER and XMASTER handling is so different), then none of this code is 
