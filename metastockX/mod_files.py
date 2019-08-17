@@ -257,7 +257,7 @@ class DataFileInfo(object):
         """
         Load Metastock data file and output the data to text file.
         """
-        print "Processing %s (fileNo %d)" % (self.stock_symbol, self.file_num)
+        print ("Processing %s (fileNo %d)" % (self.stock_symbol, self.file_num))
         try:
             #print self.stock_symbol, self.file_num
             self._load_columns(dir_path)
@@ -265,7 +265,7 @@ class DataFileInfo(object):
             self.load_candles(dir_path)
 
         except Exception:
-            print "Error while converting symbol", self.stock_symbol
+            print ("Error while converting symbol", self.stock_symbol)
             traceback.print_exc()
 
 
@@ -281,7 +281,7 @@ class DataFileInfo(object):
             data_dict_list = self.candles_to_list(dir_path)
 
         except Exception:
-            print "Error while converting symbol", self.stock_symbol
+            print ("Error while converting symbol", self.stock_symbol)
             traceback.print_exc()
         finally:
             return data_dict_list
@@ -372,10 +372,10 @@ class MSEMasterFile(object):
         Lists all the symbols from metastock index file and writes it
         to the output
         """
-        print "List of available symbols:"
+        print ("List of available symbols:")
         for stock in self.stocks:
-            print "symbol: %s, name: %s, file number: %s" % \
-                (stock.stock_symbol, stock.stock_name, stock.file_num)
+            print ("symbol: %s, name: %s, file number: %s" % \
+                (stock.stock_symbol, stock.stock_name, stock.file_num))
 
     def output_ascii(self, all_symbols, symbols, dir_path=''):
         """

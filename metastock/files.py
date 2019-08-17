@@ -362,7 +362,7 @@ class MSEMasterFile:
             self.reconds_count = struct.unpack("H", self.file_handle.read(2))[0] # czy moze 1 bajt i B?
             self.last_file = struct.unpack("H", self.file_handle.read(2))[0]
         else:
-            print 'No EMASTER file in directory %s' % self.dir_path
+            print ('No EMASTER file in directory %s' % self.dir_path)
             exit()
         return
 

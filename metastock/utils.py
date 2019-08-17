@@ -86,7 +86,7 @@ def convertSymbolName (sym_name):
         beg_chars = 2
     else:
         beg_chars = 0
-    
+
     pound_char = "#"
     pound_index = sym_name.find(pound_char)
     if pound_index == -1:
