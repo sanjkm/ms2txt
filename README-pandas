@@ -1,8 +1,8 @@
 Author: sanjkm
 
 Python utility that reads Metastock data files and returns a pandas
-dataframe containing all the data. It also generates csv files if desired
-from the command line. Works in python2 and python3. 
+dataframe containing all the data. Code supports python2 and python3
+environments.
 
 Usage:
 
@@ -26,6 +26,10 @@ If empty, by default it returns all the data in the directory. More
 accurately, it returns all symbols listed in the EMASTER and the
 XMASTER files in the directory. 
 
+
+Please open the other README file to see documentation
+on the ms2txt.py program which generates csv files 
+from the command line. 
 
 Notes:
 - Different functions and routines are used to handle the symbols in the
