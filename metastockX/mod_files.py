@@ -8,6 +8,7 @@ import math
 import traceback
 
 from .utils import fmsbin2ieee, float2date, float2time, convertSymbolName
+from .utils import paddedString
 
 class DataFileInfo(object):
     """
@@ -167,7 +168,7 @@ class DataFileInfo(object):
             outfile.write('\n')
 
             # we have (self.last_rec - 1) candles to read
-            for _ in xrange(self.last_rec - 1):
+            for _ in range(self.last_rec - 1):
                 outfile.write(self.stock_symbol)
                 for col in columns:
                     if col is None: # unknown column?
@@ -304,7 +305,8 @@ class MSEMasterFile(object):
         file_handle.read(1)
         dfi.stock_symbol = file_handle.read(15)
 
-        dfi.stock_symbol = convertSymbolName (dfi.stock_symbol)
+        dfi.stock_symbol = convertSymbolName (paddedString(dfi.stock_symbol,
+                                                           'ascii'))
         
         dfi.stock_name = file_handle.read(46)
 

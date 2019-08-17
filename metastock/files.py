@@ -357,6 +357,7 @@ class MSEMasterFile:
         The whole file is read while creating this object
         @param filename: name of the file to open (usually 'EMASTER')
         """
+        
         if os.path.isfile(self.dir_path + 'EMASTER'):
             self.file_handle = open(self.dir_path + 'EMASTER', 'rb')
             self.reconds_count = struct.unpack("H", self.file_handle.read(2))[0] # czy moze 1 bajt i B?
@@ -480,7 +481,6 @@ class MetastockFiles:
                 if s.file_number > 0 and len(s.stock_name) > 0 and s.file_number in self.symbols:
                     self.symbols[s.file_number].stock_name = s.stock_name
         emaster.close()
-
         # xmaster support is not ready yet, commented out
         """
         xmaster.load()
