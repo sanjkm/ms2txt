@@ -194,7 +194,7 @@ class DataFileInfo(object):
     # Upload candle values into a list of dictionaries
     # Eventually, the list will be converted to pandas dataframe
     def candles_to_list(self, dir_path):
-        
+
         file_handle = None
         outfile = None
         data_dict_list = []
@@ -226,7 +226,7 @@ class DataFileInfo(object):
             # outfile.write('\n')
 
             # we have (self.last_rec - 1) candles to read
-            for _ in xrange(self.last_rec - 1):
+            for _ in range(self.last_rec - 1):
                 data_dict = {}
                 data_dict['Symbol'] = self.stock_symbol
                 # outfile.write(self.stock_symbol)

@@ -37,7 +37,7 @@ def ms2pandas(dir_path='', decimal_precision=4, ticker_list=[]):
     # extract the data into lists of dictionaries
     data_list = em_file.output_data_list(options.all, args)
     data_listX = Xem_file.output_data_list(options.all, args, dir_path)
-    
+
     df = pd.DataFrame(data_list + data_listX)
 
     return df
