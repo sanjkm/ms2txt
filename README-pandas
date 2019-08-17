@@ -1,7 +1,8 @@
 Author: sanjkm
 
 Python utility that reads Metastock data files and returns a pandas
-dataframe containing all the data
+dataframe containing all the data. Tested for python2, not yet tested for
+python3
 
 Usage:
 
